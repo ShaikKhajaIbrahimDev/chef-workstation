@@ -27,7 +27,7 @@ URL="https://omnitruck.chef.io/stable/$EXPEDITOR_PRODUCT_KEY/metadata?p=mac_os_x
 SHA=""
 
 function get_sha() {
-  curl -Ssv "$URL" | sed -n 's/sha256\s*\(\S*\)/\1/p'
+  curl -Ss "$URL" | sed -n 's/sha256\s*\(\S*\)/\1/p' | awk '{$1=$1;print}'
 }
 
 delay=20 # seconds
@@ -52,15 +52,13 @@ done
 
 echo "Updating Cask $EXPEDITOR_PRODUCT_KEY"
 echo "Updating version to $EXPEDITOR_VERSION"
-sed -i -r "s/(version\s*'.+')/version '$EXPEDITOR_VERSION'/g" Casks/chef-workstation.rb
+sed -i '' "s/version '.*'/version '$EXPEDITOR_VERSION'/g" Casks/chef-workstation.rb
 echo "Updating sha to $SHA"
-
-sed -i -r "s/(sha256\s*'.+')/sha256 '$SHA'/g" Casks/chef-workstation.rb
+sed -i '' "s/sha256 '.*'/sha256 '$SHA'/g" Casks/chef-workstation.rb
 
 echo "--- Debug: git diff follows"
 git diff
 
-echo "git status follows:"
 git status
 
 echo "-- Verifying Cask"
